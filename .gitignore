@@ -1,0 +1,12 @@
+### VSCode ###
+*.pid
+*.log
+*.exe
+*.msi
+*.mp4
+*.pyc
+.coverage
+**/temp/
+
+### uv ###
+pykitool.egg-info/

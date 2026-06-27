@@ -1,0 +1,33 @@
+{
+  // 格式化文件类型
+  "folderformatter.extensions": ["md", "py", "ts", "json"],
+  // 格式化换行长度
+  "prettier.printWidth": 120,
+  "[python]": {
+    // 使用 Black 作为默认 Python 格式化器
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    // 保存时格式化
+    "editor.formatOnSave": true,
+    // 保存时整理 imports (需要 isort)
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit" // 手动触发保存
+    }
+  },
+  // 代码格式化
+  "black-formatter.args": ["--line-length", "1000"],
+  // 代码引用排序
+  "isort.args": ["--profile", "black", "--skip", "third_party"],
+  // 隐藏文件夹
+  "files.exclude": {
+    // ".github": true,
+    ".venv": true,
+    ".vscode": false,
+    "pykitool.egg-info":true,
+    "**/__pycache__": true,
+    "**/__init__.py": true,
+    ".gitignore": false,
+    ".python-version": true,
+    "pyproject.toml": false,
+    "uv.lock": true
+  }
+}

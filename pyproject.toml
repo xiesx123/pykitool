@@ -1,0 +1,68 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pykitool"
+version="0.0.1"
+description=""
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    { name = "xiesx" },
+]
+keywords = [
+    "toolkit",
+    "tools",
+    "utils",
+    "helper",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "asyncio==4.0.0",
+    "fake-useragent>=2.0.0",
+    "hutool-python>=1.1.1",
+    "loguru>=0.7.3",
+    "psutil>=7.2.2",
+    "pydantic>=2.10.6",
+    "requests-cache>=1.3.2",
+    "sqlalchemy>=2.0.51",
+    "sqlmodel>=0.0.29",
+    "starlette>=0.44.0",
+    "tqdm>=4.68.3",
+]
+
+[dependency-groups]
+dev = [
+    "autoflake>=2.3.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[[tool.uv.index]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+default = true
+
+[project.urls]
+Homepage = "https://github.com/xiesx123/pykitool"
+Documentation = "https://wgp520.github.io/hutool-python"
+Repository = "https://github.com/xiesx123/pykitool"
+Issues = "https://github.com/xiesx123/pykitool/issues"
+Changelog = "https://github.com/xiesx123/pykitool/blob/master/docs/changelog.md"
+
+[tool.setuptools.packages.find]
+include = ["pykitool*"]
+exclude = ["tests*", "docs*"]
