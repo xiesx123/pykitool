@@ -39,17 +39,17 @@ def get_log_dir() -> str:
 
 # 供外部注入自定义日志目录获取函数
 def set_log_dir_getter(fn: callable):
-    """注入自定义日志目录获取函数，注入后调用 update_log_level() 立即生效。
+    """注入自定义日志目录获取函数，注入后调用 update_cfg() 立即生效。
 
     示例::
 
         # 从配置动态读取
         set_log_dir_getter(lambda: const.DIR_LOGS)
-        update_log_level()
+        update_cfg()
 
         # 直接指定固定目录
         set_log_dir_getter(lambda: "/var/log/myapp")
-        update_log_level()
+        update_cfg()
     """
     global _log_dir_getter
     _log_dir_getter = fn
@@ -68,17 +68,17 @@ def get_log_level() -> str:
 
 # 供外部注入自定义日志级别获取函数
 def set_log_level_getter(fn: callable):
-    """注入自定义日志级别获取函数，注入后调用 update_log_level() 立即生效。
+    """注入自定义日志级别获取函数，注入后调用 update_cfg() 立即生效。
 
     示例::
 
         # 从配置动态读取
         set_log_level_getter(lambda: config.LOG_LEVEL)
-        update_log_level()
+        update_cfg()
 
         # 直接指定固定级别
         set_log_level_getter(lambda: "DEBUG")
-        update_log_level()
+        update_cfg()
     """
     global _log_level_getter
     _log_level_getter = fn
@@ -173,9 +173,9 @@ class LoguruLogger:
         # 配置文件输出并启用轮转 - 按日期轮转（每天午夜）和文件大小轮转
         log_dir = get_log_dir()
         os.makedirs(log_dir, exist_ok=True)
-        self.logger.add(log_dir + "/creator_{time:YYYY-MM-DD}.log", rotation="00:00", level=current_level, format=format, colorize=False)
+        self.logger.add(log_dir + "/{time:YYYY-MM-DD}.log", rotation="00:00", level=current_level, format=format, colorize=False)
 
-    def update_log_level(self):
+    def update_cfg(self):
         # 更新日志级别配置
         self._configure_logger()
 
@@ -209,7 +209,7 @@ def restore_print(original_print):
 # 更新配置
 def update_cfg():
     if LoguruLogger._instance:
-        LoguruLogger._instance.update_log_level()
+        LoguruLogger._instance.update_cfg()
 
 
 if not LoguruLogger._instance:

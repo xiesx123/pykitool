@@ -21,6 +21,8 @@ from typing import Any, Callable, Coroutine, Dict, List, Optional, TypeVar, Unio
 from loguru import logger
 from tqdm import tqdm
 
+from pykitool.utils import cbstr
+
 # 延迟初始化标志，避免模块导入时执行 subprocess
 _ensurepip_initialized = False
 
@@ -51,16 +53,6 @@ def _get_executor():
 
 
 # ====================================================== package ======================================================
-
-
-# 将值格式化为指定长度的字符串，按指定字符填充
-def pad_string(value: Any, length: int = 10, align: str = "right", char: str = " ") -> str:
-    str_value = str(value)
-    pad_len = length - len(str_value)
-    if pad_len <= 0:
-        return str_value
-    padding = char * pad_len
-    return str_value + padding if align == "left" else padding + str_value
 
 
 # 读取包名称（去除版本号）
@@ -299,13 +291,15 @@ def subprocess_popen(cmd, cwd: str = None, log: str = None, isclean: bool = Fals
         )
 
 
-# 通过nvidia-smi检测NVIDIA GPU是否可用
-def is_nvidia_available() -> bool:
+# 消费子进程输出，防止管道堵塞
+def consume_proc_output(prefix: str, proc: subprocess.Popen) -> None:
     try:
-        result = subprocess.run(["nvidia-smi"], capture_output=True, text=True, timeout=10)
-        return result.returncode == 0
-    except (subprocess.TimeoutExpired, FileNotFoundError, subprocess.SubprocessError):
-        return False
+        if proc.stdout:
+            for line in iter(proc.stdout.readline, ""):
+                if line:
+                    logger.info("[{}] {}", prefix, line.rstrip())
+    except Exception as e:
+        logger.warning("Error consuming process output: {}", e)
 
 
 # 重启
@@ -486,17 +480,17 @@ def run_background(func: Callable[..., Any], *args, **kwargs) -> None:
     threading.Thread(target=_safe, daemon=True).start()
 
 
-# 在异步代码中安全地调用同步函数（推荐）
-async def to_thread(func: Callable[..., T], *args) -> T:
-    return await asyncio.to_thread(func, *args)
-
-
 # 在异步代码中安全地调用同步函数（兼容旧版本）
 def run_in_executor(func: Callable[..., T], *args) -> asyncio.Future[T]:
     return _get_loop().run_in_executor(_get_executor(), func, *args)
 
 
-# ====================================================== tool ======================================================
+# 在异步代码中安全地调用同步函数（推荐）
+async def to_thread(func: Callable[..., T], *args) -> T:
+    return await asyncio.to_thread(func, *args)
+
+
+# ====================================================== checker ======================================================
 
 # 工具配置字典
 TOOL_CONFIG = {
@@ -594,7 +588,7 @@ def check_tool(tool_name: str, show_print: bool = False, length: int = 15) -> To
     if not tool_path:
         logger.warning(f"{tool_name} is not available")
         if show_print:
-            print(f"{pad_string(display_name + ' Not Found', align='left', length=length)} not available")
+            print(f"{cbstr.pad_string(display_name + ' Not Found', align='left', length=length)} not available")
         else:
             print(f"{display_name} Not Found")
         return checker
@@ -612,7 +606,7 @@ def check_tool(tool_name: str, show_print: bool = False, length: int = 15) -> To
 
     if show_print:
         label = f"{display_name} {version}"
-        print(f"{pad_string(label, align='left', length=length)} Using {tool_path}")
+        print(f"{cbstr.pad_string(label, align='left', length=length)} Using {tool_path}")
     else:
         print(f"{display_name} {version}")
         print(f"Using {tool_path}")
@@ -620,14 +614,23 @@ def check_tool(tool_name: str, show_print: bool = False, length: int = 15) -> To
     return checker
 
 
-# 检查 uv 工具
+# ====================================================== uv ======================================================
+
+
+# 检查 uv
 def check_uv(show_print: bool = False, length: int = 15) -> ToolEnvChecker:
     return check_tool(tool_name="uv", show_print=show_print, length=length)
 
 
-# 检查 Python
+# ====================================================== py ======================================================
+
+
+# 检查 py
 def check_python(show_print: bool = False, length: int = 15) -> ToolEnvChecker:
     return check_tool(tool_name="python", show_print=show_print, length=length)
+
+
+# ====================================================== ffmpeg ======================================================
 
 
 # 检查 ffplay
@@ -645,23 +648,10 @@ def check_ffprobe(show_print: bool = False, length: int = 15) -> ToolEnvChecker:
     return check_tool(tool_name="ffprobe", show_print=show_print, length=length)
 
 
-# 检查 git
-def check_git(show_print: bool = False, length: int = 15) -> ToolEnvChecker:
-    return check_tool(tool_name="git", show_print=show_print, length=length)
-
-
-# 检查 aria2c
-def check_aria2c(show_print: bool = False, length: int = 15) -> ToolEnvChecker:
-    return check_tool(tool_name="aria2c", show_print=show_print, length=length)
-
-
-# ====================================================== ffmpeg ======================================================
-
-
 # 是否是指定类型
 def is_codec_type(path: str) -> str:
     try:
-        streams = process_probe_metadata(path, "streams", [])
+        streams = process_metadata(path, "streams", [])
         has_video = any(s["codec_type"] == "video" for s in streams)
         has_audio = any(s["codec_type"] == "audio" for s in streams)
         if has_video and not has_audio:
@@ -677,7 +667,7 @@ def is_codec_type(path: str) -> str:
 
 
 # 获取元数据
-def process_probe_metadata(path: str, metadata: str = "format", default: Union[Dict, List] = None) -> Union[Dict, List[Dict]]:
+def process_metadata(path: str, metadata: str = "format", default: Union[Dict, List] = None) -> Union[Dict, List[Dict]]:
     import ffmpeg
 
     if default is None:
@@ -743,7 +733,7 @@ def process_ffmpeg(duration: float, cmd: List[str], debug: bool = False) -> None
 
 
 # 删除 ffmpeg 进程
-def terminate_ffmpeg_process():
+def terminate_ffmpeg():
     import psutil
 
     # current_user = getpass.getuser()
@@ -762,7 +752,48 @@ def terminate_ffmpeg_process():
                     print(f"Failed to terminate ffmpeg process {proc.pid}: {str(e)}")
 
 
+# ====================================================== git ======================================================
+
+
+# 检查 git
+def check_git(show_print: bool = False, length: int = 15) -> ToolEnvChecker:
+    return check_tool(tool_name="git", show_print=show_print, length=length)
+
+
+# 获取版本信息
+def process_git_info():
+
+    process_git_info = {"branch": "unknown", "date": "unknown", "hash": "unknown"}
+
+    try:
+        repo_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+
+        # 获取分支名
+        result = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=repo_path, capture_output=True, text=True, timeout=5)
+        if result.returncode == 0:
+            process_git_info["branch"] = result.stdout.strip()
+
+        # 获取最后提交时间
+        result = subprocess.run(["git", "log", "-1", "--format=%ci"], cwd=repo_path, capture_output=True, text=True, timeout=5)
+        if result.returncode == 0:
+            process_git_info["date"] = result.stdout.strip()
+
+        # 获取短 commit hash
+        result = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=repo_path, capture_output=True, text=True, timeout=5)
+        if result.returncode == 0:
+            process_git_info["hash"] = result.stdout.strip()
+    except Exception as e:
+        print(f"Warning: Failed to get git info - {e}")
+
+    return process_git_info
+
+
 # ====================================================== aria2 ======================================================
+
+
+# 检查 aria2c
+def check_aria2c(show_print: bool = False, length: int = 15) -> ToolEnvChecker:
+    return check_tool(tool_name="aria2c", show_print=show_print, length=length)
 
 
 # 多线程下载
@@ -842,29 +873,28 @@ def process_aria2(url: str, save_folder: str = None, filename: str = None) -> st
     return file_path
 
 
+# ================================ 调用示例 ================================
+
+
 if __name__ == "__main__":
 
-    # print(is_installed("edge_tts"))
-    # print(get_env("HUGGINGFACEHUB_API_TOKEN"))
+    # 获取环境变量
+    print(get_env("PATH"))
 
-    # # 检查 Python
-    # print("\nTools")
-    # check_uv(show_print=True)
-    # check_python(show_print=True)
-    # check_pip(show_print=True)
-    # check_ffmpeg(show_print=True)
-    # check_ffprobe(show_print=True)
-    # check_git(show_print=True)
-    # check_aria2c(show_print=True)
+    # 获取命令行参数
+    print(get_arg(["--debug"], False))
 
-    # print(is_codec_type("C:/Users/xiesx/Desktop/test/test.mp4"))
-    # print(process_probe_metadata("C:/Users/xiesx/Desktop/test/test.mp4"))
+    # 查找空闲端口
+    print(find_free_port())
 
-    # print(process_aria2("https://github.com/xiesx123/CreatorBox/releases/download/1.0.20/deepspeed-0.15.1+d5315d0-cp310-cp310-win_amd64.whl"))
+    # 检查 Python
+    check_python()
 
-    # checker = check_git()
-    # if checker.get_version() == "None":
-    #     logger.error("git is not available. please install git first.")
-    # subprocess_popen(["git", "clone", "https://github.com/Sanster/IOPaint.git", "extensions/stable_diffusion_webui2"]).wait()
+    # 检查 ffmpeg
+    check_ffmpeg()
 
-    print(read_requirements_names("requirements.txt"))
+    # 检查包安装
+    print(is_installed(["requests"]))
+
+    # 获取环境包信息
+    print(get_environment_package(r"D:\Projects\creator\creator-box\requirements.txt"))

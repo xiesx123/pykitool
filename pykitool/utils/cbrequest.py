@@ -5,6 +5,7 @@ from typing import Dict, List, Optional
 from urllib.parse import urlparse
 
 import requests
+from hutool import NetUtil
 from loguru import logger
 from tqdm import tqdm
 
@@ -14,38 +15,10 @@ from pykitool.utils import cbfile, cbruntime
 # ================================ 网络地址 ================================
 
 
-# 获取内网 IP 地址
-def get_internal_ip() -> str:
-    try:
-        # 创建 UDP 套接字
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        # 连接到公共 DNS 服务器
-        s.connect(("1.1.1.1", 80))
-        # 获取本地 IP 地址
-        internal_ip = s.getsockname()[0]
-        s.close()
-        return internal_ip
-    except OSError as e:
-        logger.error(f"Get internal ip error: {str(e)}")
-        return "127.0.0.1"
-
-
-# 获取内网 IP 地址
-def get_local_ip() -> str:
-    try:
-        host = cbruntime.get_arg(["-h", "--host"], get_internal_ip())
-        if host == "0.0.0.0":
-            return get_internal_ip()
-        return host
-    except OSError as e:
-        logger.error(f"Get internal ip error: {str(e)}")
-        return "127.0.0.1"
-
-
 # 获取本地服务地址
 def get_localhost() -> str:
     port = cbruntime.get_arg(["-p", "--port"], 8000)
-    return f"http://{get_local_ip()}:{port}"
+    return f"http://{NetUtil.get_local_ip()}:{port}"
 
 
 # 批量获取归属地信息(ipapi)
@@ -53,7 +26,7 @@ def get_ipapi_locations_batch(ips: List[str]) -> Dict[str, Dict]:
     import random
     import time
 
-    from pykitool.base.cache import get_lru_cache
+    from pykitool.cache import get_lru_cache
 
     if not ips:
         return {}
@@ -131,7 +104,7 @@ def get_ipapi_locations_batch(ips: List[str]) -> Dict[str, Dict]:
 
 # 获取归属地信息(ipapi)
 def get_ipapi_location(ip: str) -> Dict[str, str]:
-    from pykitool.base.cache import get_lru_cache
+    from pykitool.cache import get_lru_cache
 
     if not ip:
         return {}
@@ -164,7 +137,7 @@ def get_ipapi_location(ip: str) -> Dict[str, str]:
 
 # 获取归属地信息(ip9 备用接口)
 def get_ip9_location(ip: str) -> Dict[str, str]:
-    from pykitool.base.cache import get_lru_cache
+    from pykitool.cache import get_lru_cache
 
     if not ip:
         return {}
@@ -248,7 +221,7 @@ def http_download(url: str, save_folder: str = cbfile.tempdir(), filename: Optio
     if not filename:
         filename = url.split("/")[-1]
 
-    cbfile.mk_folder(save_folder)
+    cbfile.mk(save_folder)
     file_path = cbfile.ap(os.path.join(save_folder, filename))
 
     if os.path.exists(file_path):
@@ -442,32 +415,28 @@ def start_proxy(enable: bool = False) -> None:
 
 if __name__ == "__main__":
 
-    # ==================== 连接验证示例 ====================
-
-    # url = "https://www.google.com"
-    # print(verify_socket_connection(url, timeout=1))
-    # print(verify_http_connection(url, timeout=1))
+    url = "https://www.google.com"
+    print(verify_socket_connection(url, timeout=1))
+    print(verify_http_connection(url, timeout=1))
 
     # ==================== 代理示例 ====================
 
-    # proxy = ProxyHelper()
-    # print(proxy.verify(url))
+    proxy = ProxyHelper()
+    print(proxy.verify(url))
 
-    # proxy = ProxyHelper(BaseEnum.Protocol.SOCKS5, "127.0.0.1", 10808)
-    # print(proxy.verify(url))
+    proxy = ProxyHelper(BaseAbstractEnum.Protocol.SOCKS5, "127.0.0.1", 10808)
+    print(proxy.verify(url))
 
     # ==================== 代理认证示例 ====================
 
-    # username = "admin"
-    # password = "123456"
-    # proxy = ProxyHelper(BaseEnum.Protocol.HTTP, "127.0.0.1", 10810, username, password)
-    # print(proxy.verify(url))
+    username = "admin"
+    password = "123456"
+    proxy = ProxyHelper(BaseAbstractEnum.Protocol.HTTP, "127.0.0.1", 10810, username, password)
+    print(proxy.verify(url))
 
     # ==================== 环境变量示例 ====================
 
-    # proxy = ProxyHelper(BaseEnum.Protocol.HTTP, "127.0.0.1", 10808)
-    # proxy.set_env()
-    # response = requests.get("https://www.google.com", timeout=5)
-    # print(response.status_code)
-
-    pass
+    proxy = ProxyHelper(BaseAbstractEnum.Protocol.HTTP, "127.0.0.1", 10808)
+    proxy.set_env()
+    response = requests.get("https://www.google.com", timeout=5)
+    print(response.status_code)

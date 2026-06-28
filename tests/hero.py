@@ -2,7 +2,6 @@
 # import sys
 
 # sys.path.insert(0, os.getcwd())
-
 # import sqlmodel
 # import uvicorn
 # from fastapi import FastAPI

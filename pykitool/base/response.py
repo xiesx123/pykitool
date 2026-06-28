@@ -1,13 +1,10 @@
-import os
-import sys
-
-sys.path.insert(0, os.getcwd())
-
 from enum import IntEnum
 from typing import Any, Generic, TypeVar
 
 from loguru import logger
 from pydantic import BaseModel
+
+from pykitool.utils import cbjson
 
 MAX_LOG_LENGTH = 500
 LIST_PREVIEW = 3
@@ -32,15 +29,14 @@ class ResponseModel(BaseModel, Generic[T]):
     # 将数据转换为 JSON 字符串，并对列表或字典进行预览截断
     @staticmethod
     def _json_preview(data: Any, max_length: int = MAX_LOG_LENGTH) -> str:
-        from pykitool.utils import cbutils
 
         try:
             if isinstance(data, dict):
                 preview_dict = dict(list(data.items())[:DICT_PREVIEW])
-                json_str = cbutils.to_json(preview_dict)
+                json_str = cbjson.to_json(preview_dict)
             elif isinstance(data, list):
                 preview_list = data[:LIST_PREVIEW]
-                json_str = cbutils.to_json(preview_list)
+                json_str = cbjson.to_json(preview_list)
             else:
                 json_str = str(data)
 
