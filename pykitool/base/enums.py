@@ -50,7 +50,7 @@ class AbstractEnum:
 # 基础
 class BaseAbstractEnum:
 
-    # 代理协议
+    # 代理
     class Protocol(AbstractEnum, Enum):
         HTTP = "http"
         SOCKS5 = "socks5"

@@ -4,6 +4,7 @@ from . import base
 from . import cache
 from .cache import get_lru_cache
 from .cache import get_request_session
+from . import core
 from . import device
 from .device import cpu_available_count
 from .device import cuda_memory_clear
@@ -15,6 +16,8 @@ from .device import is_nvidia_available
 from .device import is_windows
 from .device import onnxruntime_version
 from .device import set_seed
+from . import prefs
+from .prefs import PrefsManager
 from . import sqliter
 from . import tlog
 from .tlog import InterceptHandler
@@ -33,12 +36,15 @@ from . import utils
 __all__ = [
     "base",
     "cache",
+    "core",
     "device",
+    "prefs",
     "sqliter",
     "tlog",
     "utils",
     "InterceptHandler",
     "LoguruLogger",
+    "PrefsManager",
     "StartupTimer",
     "cpu_available_count",
     "cuda_memory_clear",

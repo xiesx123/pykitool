@@ -54,6 +54,28 @@ def to_json_pretty(data: Any, indent: int = 4, sort_keys: bool = False) -> str:
     )
 
 
+# 对预览数据截断
+def preview_json(data: Any, max_length: int = 500, dict_size: int = 5, list_size: int = 5) -> str:
+
+    try:
+        if isinstance(data, dict):
+            preview_dict = dict(list(data.items())[:dict_size])
+            json_str = cbjson.to_json(preview_dict)
+        elif isinstance(data, list):
+            preview_list = data[:list_size]
+            json_str = cbjson.to_json(preview_list)
+        else:
+            json_str = str(data)
+
+        # 全局截断
+        if len(json_str) > max_length:
+            json_str = json_str[:max_length] + " ... [truncated]"
+
+        return json_str
+    except Exception as e:
+        return f"<Failed to serialize data: {e}>"
+
+
 # ================================ 调用示例 ================================
 
 if __name__ == "__main__":

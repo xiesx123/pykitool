@@ -34,7 +34,7 @@ def decrypt(enc_data: str, password: str = "0123456789") -> Any:
 
 if __name__ == "__main__":
 
-    data = {"username": "admin"}
+    data = "123456"
 
     encrypted = encrypt(data)
 

@@ -1,5 +1,3 @@
-import asyncio
-import concurrent.futures
 import json
 import os
 import platform
@@ -16,7 +14,7 @@ import time
 from collections import deque
 from importlib import metadata
 from pathlib import Path
-from typing import Any, Callable, Coroutine, Dict, List, Optional, TypeVar, Union
+from typing import Any, Dict, List, Optional, Union
 
 from loguru import logger
 from tqdm import tqdm
@@ -25,32 +23,6 @@ from pykitool.utils import cbstr
 
 # 延迟初始化标志，避免模块导入时执行 subprocess
 _ensurepip_initialized = False
-
-# 泛型类型变量
-T = TypeVar("T")
-
-# 全局事件循环和执行器（延迟初始化）
-_loop = None
-_executor = None
-
-
-def _get_loop():
-    global _loop
-    try:
-        _loop = asyncio.get_running_loop()
-    except RuntimeError:
-        if _loop is None:
-            _loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(_loop)
-    return _loop
-
-
-def _get_executor():
-    global _executor
-    if _executor is None or _executor._shutdown:
-        _executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
-    return _executor
-
 
 # ====================================================== package ======================================================
 
@@ -453,41 +425,6 @@ def kill_processes_tunnel(port: int) -> None:
                 logger.info(f"Killed localtunnel process pid={proc.pid} cmdline={cmdline!r}")
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
-
-
-# ====================================================== executor ======================================================
-
-
-# 在主线程中直接运行异步函数（协程）
-def run(func: Coroutine[Any, Any, T]) -> T:
-    return asyncio.run(func)
-
-
-# 在已运行的事件循环中从另一个线程安全地提交协程执行
-def run_coroutine_threadsafe(coro: Coroutine[Any, Any, T]) -> concurrent.futures.Future[T]:
-    return asyncio.run_coroutine_threadsafe(coro, _get_loop())
-
-
-# 在后台线程中执行函数
-def run_background(func: Callable[..., Any], *args, **kwargs) -> None:
-
-    def _safe() -> None:
-        try:
-            func(*args, **kwargs)
-        except Exception as e:
-            logger.error(f"Background task error: {str(e)}")
-
-    threading.Thread(target=_safe, daemon=True).start()
-
-
-# 在异步代码中安全地调用同步函数（兼容旧版本）
-def run_in_executor(func: Callable[..., T], *args) -> asyncio.Future[T]:
-    return _get_loop().run_in_executor(_get_executor(), func, *args)
-
-
-# 在异步代码中安全地调用同步函数（推荐）
-async def to_thread(func: Callable[..., T], *args) -> T:
-    return await asyncio.to_thread(func, *args)
 
 
 # ====================================================== checker ======================================================
