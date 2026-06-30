@@ -110,8 +110,8 @@ def onnxruntime_version():
 
 
 # 设置随机种子，确保结果可复现
-def set_seed(seed: Optional[int] = None, start: int = 10000000, end: int = 99999999, show_log: bool = True) -> int:
-    import numpy as np
+def set_seed(seed: Optional[int] = None, start: int = 10000000, end: int = 99999999) -> int:
+    import numpy
 
     # 随机种子
     if seed is None:
@@ -119,14 +119,13 @@ def set_seed(seed: Optional[int] = None, start: int = 10000000, end: int = 99999
     # 设置种子
     random.seed(seed)  # Python 内置随机模块
     os.environ["PYTHONHASHSEED"] = str(seed)  # Python 哈希种子（影响字典和集合的哈希值）
-    np.random.seed(seed)  # NumPy 随机模块
+    numpy.random.seed(seed)  # NumPy 随机模块
     torch.manual_seed(seed)  # PyTorch CPU
     torch.cuda.manual_seed(seed)  # PyTorch GPU（单卡）
     torch.cuda.manual_seed_all(seed)  # 多GPU
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-    if show_log:
-        logger.info(f"Seed has been set to {seed}")
+    logger.debug(f"Seed has been set to {seed}")
     return seed
 
 
@@ -135,39 +134,29 @@ def set_seed(seed: Optional[int] = None, start: int = 10000000, end: int = 99999
 
 if __name__ == "__main__":
 
-    # ==================== 设备信息获取示例 ====================
-
     # 判断系统类型
-    # logger.info(f"Is Windows: {is_windows()}")
-    # logger.info(f"Is Linux: {is_linux()}")
-    # logger.info(f"Is Mac: {is_mac()}")
+    print(f"Is Windows: {is_windows()}")
+    print(f"Is Linux: {is_linux()}")
+    print(f"Is Mac: {is_mac()}")
 
     # 获取 CPU 核心数
-    # cpu_count = cpu_available_count()
-    # logger.info(f"Available CPU count: {cpu_count}")
+    print(f"Available CPU count: {cpu_available_count()}")
 
     # 判断 NVIDIA 是否可用
-    # nvidia_available = is_nvidia_available()
-    # logger.info(f"Nvidia available: {nvidia_available}")
+    print(f"Nvidia available: {is_nvidia_available()}")
 
     # 判断 CUDA 是否可用
-    # cuda_available = is_cuda_available()
-    # logger.info(f"CUDA available: {cuda_available}")
+    print(f"CUDA available: {is_cuda_available()}")
 
     # 获取多设备标识
-    # device = identifier(multiple=False)
-    # logger.info(f"Device: {device}")
+    print(f"Device: {identifier(multiple=False)}")
 
-    # devices = identifier(multiple=True)
-    # logger.info(f"Devices: {devices}")
+    print(f"Devices: {identifier(multiple=True)}")
 
     # 清空 CUDA 显存缓存
-    # if cuda_available:
-    #     cuda_memory_clear()
-    #     logger.info("CUDA memory cleared")
+    if is_cuda_available:
+        cuda_memory_clear()
+        print("CUDA memory cleared")
 
     # 设置随机种子
-    # seed = set_seed(show_log=True)
-    # logger.info(f"Random seed: {seed}")
-
-    pass
+    print(f"Random seed: {set_seed()}")

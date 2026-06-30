@@ -53,7 +53,7 @@ class PrefsManager(Generic[T]):
                     self._instance = self._model_class.model_validate_json(json_data=content)
                     # 将完整配置回写，补全 JSON 中缺失的新字段
                     cbfile.write(self._path, self._instance.model_dump_json(indent=4))
-                    logger.info("prefs loaded and synced to file")
+                    logger.debug(f"prefs loaded and synced to {self._path}")
                     return
             # JSON 空或无效，则保存默认配置
             self.save()
@@ -84,5 +84,5 @@ class PrefsManager(Generic[T]):
     def reload(self) -> T:
         self._load()
         self._loaded = True
-        logger.info("prefs reloaded from file")
+        logger.debug(f"prefs reloaded from {self._path}")
         return self._instance

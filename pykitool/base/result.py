@@ -102,7 +102,7 @@ class R:
     def error(cls, code: int, message: str, data: Any) -> Result: ...
 
     @classmethod
-    def error(cls, code: int = StatusCode.ERROR.value, message: str = StatusCode.ERROR.label, data: Any = None) -> Result:
+    def error(cls, code: int = StatusCode.ERROR.value, message: str = StatusCode.ERROR.label, data: Any = {}) -> Result:
         return Result(code=code, message=message, data=data)
 
 
@@ -111,7 +111,7 @@ class R:
 
 # 分页结果
 class PResult(BaseResult, Generic[T]):
-    msg: str = Field(default="", description="消息")
+    message: str = Field(default="", description="消息")
     data: list[T] = Field(default_factory=list, description="数据")
     count: int = Field(default=0, description="总数")
 
@@ -124,54 +124,54 @@ class PR:
     @classmethod
     def success(cls) -> PResult: ...
 
-    # success(code, msg)
+    # success(code, message)
     @overload
     @classmethod
-    def success(cls, code: int, msg: str) -> PResult: ...
+    def success(cls, code: int, message: str) -> PResult: ...
 
-    # success(code, msg, data)
+    # success(code, message, data)
     @overload
     @classmethod
-    def success(cls, code: int, msg: str, data: list, count: int) -> PResult: ...
+    def success(cls, code: int, message: str, data: list, count: int) -> PResult: ...
 
     @classmethod
-    def success(cls, code: int = StatusCode.SUCCESS.value, msg: str = StatusCode.SUCCESS.label, data: list = [], count: int = 0) -> PResult:
-        return PResult(code=code, msg=msg, data=data, count=count)
+    def success(cls, code: int = StatusCode.SUCCESS.value, message: str = StatusCode.SUCCESS.label, data: list = [], count: int = 0) -> PResult:
+        return PResult(code=code, message=message, data=data, count=count)
 
     # failure()
     @overload
     @classmethod
     def failure(cls) -> PResult: ...
 
-    # failure(code, msg)
+    # failure(code, message)
     @overload
     @classmethod
-    def failure(cls, code: int, msg: str) -> PResult: ...
+    def failure(cls, code: int, message: str) -> PResult: ...
 
-    # failure(code, msg, data)
+    # failure(code, message, data)
     @overload
     @classmethod
-    def failure(cls, code: int, msg: str, data: list, count: int) -> PResult: ...
+    def failure(cls, code: int, message: str, data: list, count: int) -> PResult: ...
 
     @classmethod
-    def failure(cls, code: int = StatusCode.FAILURE.value, msg: str = StatusCode.FAILURE.label, data: list = [], count: int = 0) -> PResult:
-        return PResult(code=code, msg=msg, data=data, count=count)
+    def failure(cls, code: int = StatusCode.FAILURE.value, message: str = StatusCode.FAILURE.label, data: list = [], count: int = 0) -> PResult:
+        return PResult(code=code, message=message, data=data, count=count)
 
     # error()
     @overload
     @classmethod
     def error(cls) -> PResult: ...
 
-    # error(code, msg)
+    # error(code, message)
     @overload
     @classmethod
-    def error(cls, code: int, msg: str) -> PResult: ...
+    def error(cls, code: int, message: str) -> PResult: ...
 
-    # error(code, msg, data)
+    # error(code, message, data)
     @overload
     @classmethod
-    def error(cls, code: int, msg: str, data: list, count: int) -> PResult: ...
+    def error(cls, code: int, message: str, data: list, count: int) -> PResult: ...
 
     @classmethod
-    def error(cls, code: int = StatusCode.ERROR.value, msg: str = StatusCode.ERROR.label, data: list = [], count: int = 0) -> PResult:
-        return PResult(code=code, msg=msg, data=data, count=count)
+    def error(cls, code: int = StatusCode.ERROR.value, message: str = StatusCode.ERROR.label, data: list = [], count: int = 0) -> PResult:
+        return PResult(code=code, message=message, data=data, count=count)

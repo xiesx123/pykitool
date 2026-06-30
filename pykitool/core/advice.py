@@ -86,7 +86,11 @@ class LoggingAdvice(BaseHTTPMiddleware):
         return response
 
 
-def register_controller_advice(app: FastAPI, include_paths: Optional[list] = None, exclude_paths: Optional[list] = None) -> None:
+def register_controller_advice(
+    app: FastAPI,
+    include_paths: Optional[list] = None,
+    exclude_paths: Optional[list] = None,
+) -> None:
     """
     注册全局日志中间件
 

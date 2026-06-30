@@ -19,6 +19,7 @@ from .device import set_seed
 from . import prefs
 from .prefs import PrefsManager
 from . import sqliter
+from . import support
 from . import tlog
 from .tlog import InterceptHandler
 from .tlog import LoguruLogger
@@ -40,6 +41,7 @@ __all__ = [
     "device",
     "prefs",
     "sqliter",
+    "support",
     "tlog",
     "utils",
     "InterceptHandler",

@@ -79,7 +79,7 @@ class Platform(AbstractEnum, Enum):
                     return func(*args, **kwargs)
                 else:
                     if enabled:
-                        logger.info(f"Function {func.__name__} is not supported on {platform.system()}. Skipping.")
+                        logger.debug(f"Function {func.__name__} is not supported on {platform.system()}. Skipping.")
                     return None
 
             return wrapper

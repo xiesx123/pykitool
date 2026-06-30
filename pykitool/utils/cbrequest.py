@@ -60,7 +60,7 @@ def get_ipapi_locations_batch(ips: List[str]) -> Dict[str, Dict]:
         if not ips_to_query:
             break
 
-        logger.info(f"Batch IP location query attempt {attempt + 1}/{max_retries}, querying {len(ips_to_query)} IPs")
+        logger.debug(f"Batch IP location query attempt {attempt + 1}/{max_retries}, querying {len(ips_to_query)} IPs")
         failed_ips = []
 
         # 按 100 个一批切分
@@ -243,7 +243,7 @@ def http_download(url: str, save_folder: str = cbfile.tempdir(), filename: Optio
                 dynamic_ncols=True,
             ):
                 file.write(chunk)
-        logger.info(f"File saved to: {file_path}")
+        logger.debug(f"File saved to: {file_path}")
     except requests.exceptions.RequestException as e:
         logger.error(f"HTTP request failed: {str(e)}")
         raise RuntimeError(f"Download failed: {str(e)}") from e

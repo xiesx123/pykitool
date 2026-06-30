@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from loguru import logger
 
 from pykitool.base.result import R
+from pykitool.support.firebase.exceptions import FirebaseException
 
 
 # 异常基类
@@ -16,18 +17,25 @@ class RuntimeException(Exception):
 
 
 # 异常拦截
-async def runtime_exception_handler(request: Request, exc: RuntimeException) -> JSONResponse:
-    start = getattr(request.state, "start_time", None)
-    elapsed = f"  {(time.perf_counter() - start) * 1000:.2f}ms" if start else ""
-    logger.warning(f"<!  {request.method} {request.url.path}  RuntimeException: {exc.message} (code={exc.status_code}){elapsed}")
-    return JSONResponse(content=R.error(code=exc.status_code, message=exc.message).model_dump())
-
-
 async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     start = getattr(request.state, "start_time", None)
     elapsed = f"  {(time.perf_counter() - start) * 1000:.2f}ms" if start else ""
-    logger.exception(f"<!  {request.method} {request.url.path}  Exception: {exc}{elapsed}")
+    logger.exception(f"<! {request.method} {request.url.path}  Exception: {exc}{elapsed} >")
     return JSONResponse(content=R.error(message=str(exc)).model_dump(), status_code=500)
+
+
+async def firebase_exception_handler(request: Request, exc: FirebaseException) -> JSONResponse:
+    start = getattr(request.state, "start_time", None)
+    elapsed = f"  {(time.perf_counter() - start) * 1000:.2f}ms" if start else ""
+    logger.warning(f"<! {request.method} {request.url.path}  FirebaseException: {exc.message}{elapsed} >")
+    return JSONResponse(content=R.error(message=exc.message).model_dump())
+
+
+async def runtime_exception_handler(request: Request, exc: RuntimeException) -> JSONResponse:
+    start = getattr(request.state, "start_time", None)
+    elapsed = f"  {(time.perf_counter() - start) * 1000:.2f}ms" if start else ""
+    logger.warning(f"<! {request.method} {request.url.path}  RuntimeException: {exc.message} (code={exc.status_code}){elapsed} >")
+    return JSONResponse(content=R.error(code=exc.status_code, message=exc.message).model_dump())
 
 
 def register_controller_exception(
@@ -43,5 +51,6 @@ def register_controller_exception(
         app = FastAPI()
         register_controller_exception(app)
     """
-    app.add_exception_handler(RuntimeException, runtime_exception_handler)
     app.add_exception_handler(Exception, global_exception_handler)
+    app.add_exception_handler(FirebaseException, firebase_exception_handler)
+    app.add_exception_handler(RuntimeException, runtime_exception_handler)

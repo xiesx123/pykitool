@@ -402,7 +402,7 @@ def kill_process(pid: int = None, port: int = None, force: bool = True) -> bool:
         return False
 
     if not pids:
-        logger.warning(f"No process found listening on port {port}.")
+        logger.debug(f"No process found listening on port {port}.")
         return False
 
     success = False
@@ -804,7 +804,7 @@ def process_aria2(url: str, save_folder: str = None, filename: str = None) -> st
     pbar.close()
     # 判断
     if proc.returncode == 0:
-        logger.info(f"File has been saved to: {file_path}")
+        logger.debug(f"File has been saved to: {file_path}")
     else:
         logger.error("Failed to download error_code: {}", proc.returncode)
     return file_path
