@@ -3,6 +3,9 @@
 from . import advice
 from .advice import LoggingAdvice
 from .advice import register_controller_advice
+from . import configer
+from .configer import ConfigUpdateVO
+from .configer import register_controller_configer
 from . import exception
 from .exception import ExcCode
 from .exception import RuntimeException
@@ -17,15 +20,18 @@ from .swagger import register_controller_swagger
 
 __all__ = [
     "advice",
+    "configer",
     "exception",
     "filer",
     "swagger",
+    "ConfigUpdateVO",
     "ExcCode",
     "LoggingAdvice",
     "RuntimeException",
     "firebase_exception_handler",
     "global_exception_handler",
     "register_controller_advice",
+    "register_controller_configer",
     "register_controller_exception",
     "register_controller_filer",
     "register_controller_swagger",
