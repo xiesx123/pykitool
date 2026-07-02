@@ -1,5 +1,11 @@
 # Auto-generated __init__.py
 
+from . import bean
+from .bean import BatchDeleteVO
+from .bean import BatchEnableVO
+from .bean import BatchStatusVO
+from .bean import PageVO
+from .bean import RowsResponse
 from . import const
 from . import enums
 from .enums import AbstractEnum
@@ -14,16 +20,22 @@ from .result import Result
 from .result import StatusCode
 
 __all__ = [
+    "bean",
     "const",
     "enums",
     "result",
     "AbstractEnum",
     "BaseAbstractEnum",
     "BaseResult",
+    "BatchDeleteVO",
+    "BatchEnableVO",
+    "BatchStatusVO",
     "PR",
     "PResult",
+    "PageVO",
     "Platform",
     "R",
     "Result",
+    "RowsResponse",
     "StatusCode",
 ]

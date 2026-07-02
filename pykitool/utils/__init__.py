@@ -89,6 +89,7 @@ from .cbruntime import subprocess_run
 from .cbruntime import terminate_ffmpeg
 from .cbruntime import wait_port
 from . import cbstr
+from .cbstr import is_email
 from .cbstr import pad_string
 from .cbstr import str_hyperlink
 from . import cbutils
@@ -143,6 +144,7 @@ __all__ = [
     "http_download",
     "is_codec_type",
     "is_debug",
+    "is_email",
     "is_installed",
     "is_json",
     "kill_process",

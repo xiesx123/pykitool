@@ -1,5 +1,13 @@
 from typing import Any
 
+from hutool import ReUtil
+
+
+# 是否为邮箱格式
+def is_email(str: str) -> bool:
+    EMAIL_PATTERN = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$"
+    return ReUtil.is_match(EMAIL_PATTERN, str)
+
 
 # 生成终端超链接
 def str_hyperlink(url: str, text: str) -> str:
@@ -20,6 +28,10 @@ def pad_string(data: Any, length: int = 10, align: str = "right", char: str = " 
 # ================================ 调用示例 ================================
 
 if __name__ == "__main__":
+
+    # 是否为邮箱格式
+    print(is_email("123@gamil.com"))
+    print(is_email("123@qq.com"))
 
     # 生成终端超链接
     print(f"Hyperlink: {str_hyperlink('https://github.com', 'GitHub')}")

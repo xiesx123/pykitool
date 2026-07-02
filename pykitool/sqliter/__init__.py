@@ -12,6 +12,7 @@ from . import plus
 from .plus import EngineException
 from .plus import Query
 from .plus import SQLModelPlus
+from .plus import SoftDelete
 from .plus import classproperty
 from . import repo
 from .repo import SQLModelRepo
@@ -31,6 +32,7 @@ __all__ = [
     "SQLModelPlus",
     "SQLModelRepo",
     "SessionNotInitialisedError",
+    "SoftDelete",
     "classproperty",
     "reuse_session_or_new",
     "sessionmaker",
