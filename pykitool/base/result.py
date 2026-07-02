@@ -25,6 +25,7 @@ class StatusCode(AbstractEnum, Enum):
 # 基类
 class BaseResult(BaseModel):
     code: int = Field(default=0, description="状态")
+    message: str = Field(default="", description="消息")
 
     def is_success(self) -> bool:
         return self.code == StatusCode.SUCCESS.value
@@ -41,7 +42,6 @@ class BaseResult(BaseModel):
 
 # 返回结果
 class Result(BaseResult, Generic[T]):
-    message: str = Field(default="", description="消息")
     data: T = Field(default=None, description="数据")
 
 
@@ -111,7 +111,6 @@ class R:
 
 # 分页结果
 class PResult(BaseResult, Generic[T]):
-    message: str = Field(default="", description="消息")
     data: list[T] = Field(default_factory=list, description="数据")
     count: int = Field(default=0, description="总数")
 

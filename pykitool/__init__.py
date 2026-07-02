@@ -18,7 +18,7 @@ from .device import onnxruntime_version
 from .device import set_seed
 from . import prefs
 from .prefs import PrefsManager
-from . import sqliter
+from . import repo
 from . import support
 from . import tlog
 from .tlog import InterceptHandler
@@ -40,7 +40,7 @@ __all__ = [
     "core",
     "device",
     "prefs",
-    "sqliter",
+    "repo",
     "support",
     "tlog",
     "utils",

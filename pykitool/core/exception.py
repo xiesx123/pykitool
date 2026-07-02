@@ -1,11 +1,43 @@
 import time
+from enum import Enum
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from loguru import logger
 
+from pykitool.base.enums import AbstractEnum
 from pykitool.base.result import R
 from pykitool.support.firebase.exceptions import FirebaseException
+
+
+# 异常基码
+class ExcCode(AbstractEnum, Enum):
+
+    RUNTIME = (1000, "Runtime Error")
+
+    ASYNC = (1010, "Execution Error")
+
+    REQUEST = (2000, "Request Failed")
+
+    RETRY = (2010, "Retry Failed")
+
+    LIMITER = (2020, "Request Rate Limited")
+
+    VALIDATOR = (3000, "Validation Error")
+
+    DBASE = (4000, "Database Error")
+
+    TOKEN = (5000, "Token Error")
+
+    SIGN = (6000, "Signature Error")
+
+    UNKNOWN = (9999, "Unknown")
+
+    def __new__(cls, value: int, label: str):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj.label = label
+        return obj
 
 
 # 异常基类

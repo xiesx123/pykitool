@@ -1,3 +1,13 @@
+class EngineException(Exception):
+
+    def __init__(self):
+        msg = """
+        engine = sqlmodel.create_engine(config.get_database(), echo=False)
+        SQLModelPlus.set_engine(engine)
+        """
+        super().__init__(msg)
+
+
 class MissingSessionError(Exception):
     """
     Excetion raised for when the user tries to access a database session before

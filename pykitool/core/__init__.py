@@ -4,6 +4,7 @@ from . import advice
 from .advice import LoggingAdvice
 from .advice import register_controller_advice
 from . import exception
+from .exception import ExcCode
 from .exception import RuntimeException
 from .exception import firebase_exception_handler
 from .exception import global_exception_handler
@@ -19,6 +20,7 @@ __all__ = [
     "exception",
     "filer",
     "swagger",
+    "ExcCode",
     "LoggingAdvice",
     "RuntimeException",
     "firebase_exception_handler",
