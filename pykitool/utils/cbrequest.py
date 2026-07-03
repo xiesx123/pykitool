@@ -81,7 +81,7 @@ def get_ipapi_locations_batch(ips: List[str]) -> Dict[str, Dict]:
                         if item.get("status") == "success":
                             results[ip] = item
                             # 写入缓存
-                            cache.set(f"ip_loc_raw_{ip}", item, timeout=86400)
+                            cache.put(f"ip_loc_raw_{ip}", item)
                         else:
                             failed_ips.append(ip)
                 else:
@@ -128,7 +128,7 @@ def get_ipapi_location(ip: str) -> Dict[str, str]:
             data = resp.json()
             if data.get("status") == "success":
                 # 写入缓存，1 天过期，避免频繁请求
-                cache.set(cache_key, data, timeout=86400)
+                cache.put(cache_key, data)
                 return data
     except Exception as e:
         logger.error(f"Get IP location failed for {ip}: {e}")
@@ -164,7 +164,7 @@ def get_ip9_location(ip: str) -> Dict[str, str]:
                 # 统一格式化为 ip-api 相同的结构
                 formatted_data = {"status": "success", "country": result_data.get("country", ""), "regionName": result_data.get("prov", ""), "city": result_data.get("city", "")}
                 # 写入缓存，1 天过期
-                cache.set(cache_key, formatted_data, timeout=86400)
+                cache.put(cache_key, formatted_data)
                 return formatted_data
     except Exception as e:
         logger.error(f"Get IP location (ip9) failed for {ip}: {e}")
