@@ -3,13 +3,29 @@ import os
 import platform
 import random
 import subprocess
-from typing import List, Optional, Union
+from typing import Any, List, Optional, Union
 
-import torch
 from hutool import RandomUtil
 from loguru import logger
 
 from pykitool.base.enums import Platform
+
+# ================================ torch (optional) ================================
+
+try:
+    import torch as _torch
+
+    TORCH_AVAILABLE = True
+except ImportError:
+    _torch = None  # type: ignore[assignment]
+    TORCH_AVAILABLE = False
+
+
+def _require_torch(feature: str = "this feature"):
+    """如果 torch 不可用，抛出清晰的错误提示"""
+    if not TORCH_AVAILABLE:
+        raise ImportError(f"torch is required for {feature}. " "Install it with: pip install torch  " "or: pip install pykitool[torch]")
+
 
 # ================================ os ================================
 
@@ -63,37 +79,39 @@ def is_nvidia_available() -> bool:
 
 # 判断 CUDA 是否可用
 def is_cuda_available() -> bool:
-    import torch
-
-    return torch.cuda.is_available()
+    if not TORCH_AVAILABLE:
+        return False
+    return _torch.cuda.is_available()
 
 
 # 获取显卡标识（CPU 或 GPU）
-def identifier(multiple: bool = False) -> Union[str, List[torch.device]]:
+def identifier(multiple: bool = False) -> Union[str, List[Any]]:
+    if not TORCH_AVAILABLE:
+        logger.warning("torch is not available, returning 'cpu' as default device.")
+        return "cpu" if not multiple else ["cpu"]
     # 检查是否有可用的 CUDA 设备
-    cuda_available = torch.cuda.is_available()
+    cuda_available = _torch.cuda.is_available()
     device_str = "cuda" if cuda_available else "cpu"
     # 多设备支持
     if not multiple:
         return device_str
     else:
         if cuda_available:
-            device_count = torch.cuda.device_count()
-            return [torch.device(f"cuda:{i}") for i in range(device_count)]
+            device_count = _torch.cuda.device_count()
+            return [_torch.device(f"cuda:{i}") for i in range(device_count)]
         return [device_str]
 
 
 # 清空 CUDA 显存缓存
-@torch.no_grad()
 def cuda_memory_clear() -> None:
-    import torch
-
-    # 清空 GPU 缓存
-    torch.cuda.empty_cache()
-    # 清空 CUDA 内存
-    if torch.cuda.is_available():
-        torch.cuda.synchronize()
-        torch.cuda.ipc_collect()
+    _require_torch("cuda_memory_clear")
+    with _torch.no_grad():
+        # 清空 GPU 缓存
+        _torch.cuda.empty_cache()
+        # 清空 CUDA 内存
+        if _torch.cuda.is_available():
+            _torch.cuda.synchronize()
+            _torch.cuda.ipc_collect()
 
 
 # ================================ runtime ================================
@@ -101,7 +119,10 @@ def cuda_memory_clear() -> None:
 
 # 获取 onnxruntime 版本
 def onnxruntime_version():
-    import onnxruntime as ort
+    try:
+        import onnxruntime as ort
+    except ImportError:
+        return "unknown"
 
     try:
         return f"{ort.__version__}+{ort.get_device().lower()}"
@@ -111,7 +132,12 @@ def onnxruntime_version():
 
 # 设置随机种子，确保结果可复现
 def set_seed(seed: Optional[int] = None, start: int = 10000000, end: int = 99999999) -> int:
-    import numpy
+    try:
+        import numpy
+
+        numpy_available = True
+    except ImportError:
+        numpy_available = False
 
     # 随机种子
     if seed is None:
@@ -119,12 +145,14 @@ def set_seed(seed: Optional[int] = None, start: int = 10000000, end: int = 99999
     # 设置种子
     random.seed(seed)  # Python 内置随机模块
     os.environ["PYTHONHASHSEED"] = str(seed)  # Python 哈希种子（影响字典和集合的哈希值）
-    numpy.random.seed(seed)  # NumPy 随机模块
-    torch.manual_seed(seed)  # PyTorch CPU
-    torch.cuda.manual_seed(seed)  # PyTorch GPU（单卡）
-    torch.cuda.manual_seed_all(seed)  # 多GPU
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
+    if numpy_available:
+        numpy.random.seed(seed)  # NumPy 随机模块
+    if TORCH_AVAILABLE:
+        _torch.manual_seed(seed)  # PyTorch CPU
+        _torch.cuda.manual_seed(seed)  # PyTorch GPU（单卡）
+        _torch.cuda.manual_seed_all(seed)  # 多GPU
+        _torch.backends.cudnn.deterministic = True
+        _torch.backends.cudnn.benchmark = False
     logger.debug(f"Seed has been set to {seed}")
     return seed
 
@@ -154,7 +182,7 @@ if __name__ == "__main__":
     print(f"Devices: {identifier(multiple=True)}")
 
     # 清空 CUDA 显存缓存
-    if is_cuda_available:
+    if is_cuda_available():
         cuda_memory_clear()
         print("CUDA memory cleared")
 

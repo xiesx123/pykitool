@@ -43,8 +43,6 @@ dependencies = [
     "sqlalchemy>=2.0.51",
     "sqlmodel>=0.0.29",
     "sseclient-py>=1.7.0",
-    "starlette>=0.44.0",
-    "torch>=2.5.1",
     "tqdm>=4.68.3",
     "typing-extensions>=4.13.2",
 ]
@@ -56,6 +54,7 @@ dev = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
+torch = ["torch>=2.0.0"]
 
 [[tool.uv.index]]
 url = "https://pypi.tuna.tsinghua.edu.cn/simple"
