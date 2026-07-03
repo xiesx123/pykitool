@@ -275,13 +275,19 @@ def consume_proc_output(prefix: str, proc: subprocess.Popen) -> None:
 
 # 重启
 def reboot(py_path: str = sys.executable, delay: int = 3) -> None:
-    from pyngrok import ngrok
+    try:
+        from pyngrok import ngrok
+
+        ngrok_available = True
+    except ImportError:
+        ngrok_available = False
 
     # 延迟重启函数
     def delayed_restart():
+
         # 停止代理
         is_ngrok = get_arg(["--ngrok"], False)
-        if is_ngrok:
+        if ngrok_available and is_ngrok:
             try:
                 ngrok.kill()
             except Exception as e:
@@ -591,10 +597,17 @@ def check_ffprobe(show_print: bool = False, length: int = 15) -> ToolEnvChecker:
 
 # 获取元数据
 def process_metadata(path: str, metadata: str = "format", default: Union[Dict, List] = None) -> Union[Dict, List[Dict]]:
-    import ffmpeg
+    try:
+        import ffmpeg
+
+        ffmpeg_available = True
+    except ImportError:
+        ffmpeg_available = False
 
     if default is None:
         default = {}
+    if not ffmpeg_available:
+        return default
     try:
         probe = ffmpeg.probe(path)
         return probe.get(metadata, default)
