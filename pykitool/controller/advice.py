@@ -19,7 +19,7 @@ class LoggingAdvice(BaseHTTPMiddleware):
     - 支持 exclude_paths 排除指定路径前缀，跳过日志拦截
     - 配合 register_controller_advice() 使用，统一捕获异常并返回 R.error() 格式
 
-    用法::
+    示例::
 
         from fastapi import FastAPI
         from pykitool.core.advice import register_controller_advice
@@ -92,9 +92,9 @@ def register_controller_advice(
     exclude_paths: Optional[list] = None,
 ) -> None:
     """
-    注册全局日志中间件
+    注册统一返回处理器
 
-    用法::
+    示例::
 
         from fastapi import FastAPI
         from pykitool.core.advice import register_controller_advice

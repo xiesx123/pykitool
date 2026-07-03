@@ -25,6 +25,8 @@
     "pykitool.egg-info":true,
     "**/__pycache__": true,
     "**/__init__.py": true,
+    "logs": true,
+    "dist": true,
     ".gitignore": false,
     ".python-version": true,
     "pyproject.toml": false,

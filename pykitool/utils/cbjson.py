@@ -35,28 +35,24 @@ def load_json_file(path: Union[str, Path], default: Any = None) -> Any:
 
 # 将数据转换为 JSON 字符串（紧凑格式）
 def to_json(data: Any) -> str:
-    return json.dumps(
-        data,
-        ensure_ascii=False,
-        separators=(",", ":"),
-        default=lambda o: o.model_dump() if hasattr(o, "model_dump") else str(o),
-    )
+    return JSONUtil.to_json_str(data)
 
 
 # 将数据转换为格式化的 JSON 字符串
-def to_json_pretty(data: Any, indent: int = 4, sort_keys: bool = False) -> str:
+def to_json_pretty(data: Any, indent: int = 2, sort: bool = False) -> str:
+    if not sort:
+        return JSONUtil.to_json_pretty_str(data)
     return json.dumps(
         data,
         ensure_ascii=False,
         default=lambda o: o.model_dump() if hasattr(o, "model_dump") else str(o),
         indent=indent,
-        sort_keys=sort_keys,
+        sort_keys=sort,
     )
 
 
 # 对预览数据截断
 def preview_json(data: Any, max_length: int = 500, dict_size: int = 5, list_size: int = 5) -> str:
-
     try:
         if isinstance(data, dict):
             preview_dict = dict(list(data.items())[:dict_size])
@@ -73,7 +69,7 @@ def preview_json(data: Any, max_length: int = 500, dict_size: int = 5, list_size
 
         return json_str
     except Exception as e:
-        return f"<Failed to serialize data: {e}>"
+        return f"Failed to serialize data: {e}>"
 
 
 # ================================ 调用示例 ================================
@@ -97,4 +93,5 @@ if __name__ == "__main__":
     print(to_json(data))
 
     # 将数据转换为格式化的 JSON 字符串
-    print(to_json_pretty(data, indent=2, sort_keys=True))
+    print(to_json_pretty(data))
+    print(to_json_pretty(data, indent=2, sort=True))

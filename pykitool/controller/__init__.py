@@ -4,15 +4,15 @@ from . import advice
 from .advice import LoggingAdvice
 from .advice import register_controller_advice
 from . import configer
-from .configer import ConfigUpdateVO
+from .configer import ConfigVO
 from .configer import register_controller_configer
-from . import exception
-from .exception import ExcCode
-from .exception import RuntimeException
-from .exception import firebase_exception_handler
-from .exception import global_exception_handler
-from .exception import register_controller_exception
-from .exception import runtime_exception_handler
+from . import exce
+from .exce import ExcCode
+from .exce import RuntimeException
+from .exce import firebase_exception_handler
+from .exce import global_exception_handler
+from .exce import register_controller_exception
+from .exce import runtime_exception_handler
 from . import filer
 from .filer import register_controller_filer
 from . import swagger
@@ -21,10 +21,10 @@ from .swagger import register_controller_swagger
 __all__ = [
     "advice",
     "configer",
-    "exception",
+    "exce",
     "filer",
     "swagger",
-    "ConfigUpdateVO",
+    "ConfigVO",
     "ExcCode",
     "LoggingAdvice",
     "RuntimeException",

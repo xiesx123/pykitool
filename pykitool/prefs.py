@@ -16,7 +16,7 @@ class PrefsManager(Generic[T]):
     """
     泛型配置管理器，基于 Pydantic BaseModel 提供 JSON 文件持久化。
 
-    用法示例：
+    示例示例：
 
         from pydantic import BaseModel
         from pykitool.prefs import PrefsManager

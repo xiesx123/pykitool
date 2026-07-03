@@ -1,5 +1,4 @@
 import os
-import socket
 import subprocess
 from typing import Dict, List, Optional
 from urllib.parse import urlparse
@@ -16,9 +15,11 @@ from pykitool.utils import cbfile, cbruntime
 
 
 # 获取本地服务地址
-def get_localhost() -> str:
-    port = cbruntime.get_arg(["-p", "--port"], 8000)
-    return f"http://{NetUtil.get_local_ip()}:{port}"
+def get_localhost(is_https: bool = False, host: str = "127.0.0.1", port: int = 8000) -> str:
+    scheme = "https" if is_https else "http"
+    host = host or NetUtil.get_local_ip()
+    port = cbruntime.get_arg(["-p", "--port"], port)
+    return f"{scheme}://{host}:{port}"
 
 
 # 批量获取归属地信息(ipapi)
@@ -174,26 +175,8 @@ def get_ip9_location(ip: str) -> Dict[str, str]:
 # ================================ 连接验证 ================================
 
 
-# 验证 Socket 连接
-def verify_socket_connection(url: str, timeout: float = 1.0, show_print: bool = False) -> bool:
-    try:
-        parsed = urlparse(url)
-        host = parsed.hostname or "localhost"
-        port = parsed.port or 80
-        with socket.create_connection((host, port), timeout=timeout):
-            return True
-    except socket.timeout:
-        if show_print:
-            logger.warning(f"Check {url} connection timed out")
-        return False
-    except OSError as e:
-        if show_print:
-            logger.warning(f"Check {url} connection failed: {str(e)}")
-        return False
-
-
 # 验证 HTTP 连接
-def verify_http_connection(url: str = "https://www.google.com", proxy: Optional[Dict[str, str]] = None, timeout: float = 1.0, show_print: bool = False) -> bool:
+def verify_connection(url: str = "https://www.google.com", proxy: Optional[Dict[str, str]] = None, timeout: float = 1.0, show_print: bool = False) -> bool:
     try:
         resp = requests.get(url, proxies=proxy, timeout=timeout)
         return resp.ok
@@ -211,7 +194,7 @@ def verify_http_connection(url: str = "https://www.google.com", proxy: Optional[
         return False
 
 
-# ================================ Download 下载 ================================
+# ================================ 文件下载 ================================
 
 
 # 通过 HTTP 下载文件
@@ -386,7 +369,7 @@ class ProxyHelper:
 
     # 验证代理连接
     def verify(self, url: str = "https://www.google.com", timeout: int = 1, print_log: bool = True) -> bool:
-        return verify_http_connection(url, proxy=self.get_proxies(), timeout=timeout, show_print=print_log)
+        return verify_connection(url, proxy=self.get_proxies(), timeout=timeout, show_print=print_log)
 
 
 # 启动代理
@@ -415,9 +398,11 @@ def start_proxy(enable: bool = False) -> None:
 
 if __name__ == "__main__":
 
+    print(get_localhost())
+    print(NetUtil.local_ipv4s())
+
     url = "https://www.google.com"
-    print(verify_socket_connection(url, timeout=1))
-    print(verify_http_connection(url, timeout=1))
+    print(verify_connection(url, timeout=1))
 
     # ==================== 代理示例 ====================
 

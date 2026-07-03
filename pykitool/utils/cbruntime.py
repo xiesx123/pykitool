@@ -1,7 +1,6 @@
 import json
 import os
 import platform
-import random
 import re
 import shutil
 import signal
@@ -328,19 +327,6 @@ def open_browser(uri: str) -> None:
 # ====================================================== process ======================================================
 
 
-# 在指定范围（如 8010-8080）内随机选择一个未被占用的端口
-def find_free_port(start: int = 8080, end: int = 8099, max_attempts: int = 3) -> int:
-    for _ in range(max_attempts):
-        port = random.randint(start, end)
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            try:
-                s.bind(("", port))
-                return port
-            except OSError:
-                continue
-    raise RuntimeError(f"Unable to find a free port in the range {start}-{end}")
-
-
 # 等待端口可访问
 def wait_port(host: str, port: int, timeout: int = 5) -> bool:
     host = "127.0.0.1" if host == "0.0.0.0" else host
@@ -570,21 +556,6 @@ def check_python(show_print: bool = False, length: int = 15) -> ToolEnvChecker:
 # ====================================================== ffmpeg ======================================================
 
 
-# 检查 ffplay
-def check_ffplay(show_print: bool = False, length: int = 15) -> ToolEnvChecker:
-    return check_tool(tool_name="ffplay", show_print=show_print, length=length)
-
-
-# 检查 ffmpeg
-def check_ffmpeg(show_print: bool = False, length: int = 15) -> ToolEnvChecker:
-    return check_tool(tool_name="ffmpeg", show_print=show_print, length=length)
-
-
-# 检查 ffprobe
-def check_ffprobe(show_print: bool = False, length: int = 15) -> ToolEnvChecker:
-    return check_tool(tool_name="ffprobe", show_print=show_print, length=length)
-
-
 # 是否是指定类型
 def is_codec_type(path: str) -> str:
     try:
@@ -601,6 +572,21 @@ def is_codec_type(path: str) -> str:
             return "unknown"  # 没有检测到音频/视频流
     except Exception as e:
         return "unknown"
+
+
+# 检查 ffplay
+def check_ffplay(show_print: bool = False, length: int = 15) -> ToolEnvChecker:
+    return check_tool(tool_name="ffplay", show_print=show_print, length=length)
+
+
+# 检查 ffmpeg
+def check_ffmpeg(show_print: bool = False, length: int = 15) -> ToolEnvChecker:
+    return check_tool(tool_name="ffmpeg", show_print=show_print, length=length)
+
+
+# 检查 ffprobe
+def check_ffprobe(show_print: bool = False, length: int = 15) -> ToolEnvChecker:
+    return check_tool(tool_name="ffprobe", show_print=show_print, length=length)
 
 
 # 获取元数据
@@ -820,9 +806,6 @@ if __name__ == "__main__":
 
     # 获取命令行参数
     print(get_arg(["--debug"], False))
-
-    # 查找空闲端口
-    print(find_free_port())
 
     # 检查 Python
     check_python()

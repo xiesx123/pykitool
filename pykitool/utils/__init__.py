@@ -53,8 +53,7 @@ from .cbrequest import get_ipapi_locations_batch
 from .cbrequest import get_localhost
 from .cbrequest import http_download
 from .cbrequest import start_proxy
-from .cbrequest import verify_http_connection
-from .cbrequest import verify_socket_connection
+from .cbrequest import verify_connection
 from . import cbruntime
 from .cbruntime import ToolEnvChecker
 from .cbruntime import check_aria2c
@@ -66,7 +65,6 @@ from .cbruntime import check_python
 from .cbruntime import check_tool
 from .cbruntime import check_uv
 from .cbruntime import consume_proc_output
-from .cbruntime import find_free_port
 from .cbruntime import get_arg
 from .cbruntime import get_ensurepip
 from .cbruntime import get_env
@@ -129,7 +127,6 @@ __all__ = [
     "exist",
     "fileext",
     "filename",
-    "find_free_port",
     "find_list_item_by_field",
     "find_list_item_by_value_in_set",
     "fullname",
@@ -186,8 +183,7 @@ __all__ = [
     "to_json",
     "to_json_pretty",
     "utc_to_cst",
-    "verify_http_connection",
-    "verify_socket_connection",
+    "verify_connection",
     "wait_port",
     "write",
 ]

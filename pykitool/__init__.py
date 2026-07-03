@@ -4,7 +4,7 @@ from . import base
 from . import cache
 from .cache import get_lru_cache
 from .cache import get_request_session
-from . import core
+from . import controller
 from . import device
 from .device import cpu_available_count
 from .device import cuda_memory_clear
@@ -37,7 +37,7 @@ from . import utils
 __all__ = [
     "base",
     "cache",
-    "core",
+    "controller",
     "device",
     "prefs",
     "repo",

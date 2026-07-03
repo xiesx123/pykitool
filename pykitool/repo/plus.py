@@ -7,16 +7,16 @@ from pydantic import ConfigDict
 from sqlalchemy import func
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import Select
-from sqlmodel import Session, SQLModel, delete, func, select, text, update
+from sqlmodel import SQLModel, func, select, text, update
 from sqlmodel.sql.expression import SelectOfScalar
 from typing_extensions import Any, Dict, List, Optional, Tuple, Union, overload
 
 from pykitool.base.result import PR
-from pykitool.core.exception import ExcCode, RuntimeException
+from pykitool.controller.exce import ExcCode, RuntimeException
 from pykitool.repo.exception import EngineException
 
 
-# 类属性描述符：兼容 Python 3.13 移除 @classmethod + @property 链式用法
+# 类属性描述符：兼容 Python 3.13 移除 @classmethod + @property 链式示例
 class _ClassPropertyDescriptor:
     def __init__(self, func):
         self.func = func
@@ -47,7 +47,7 @@ class Query:
     def all(self):
         """执行查询，返回所有匹配记录的列表。
 
-        用法::
+        示例::
 
             users = UserTable.query(UserTable.select().where(UserTable.age > 18)).all
         """
@@ -58,7 +58,7 @@ class Query:
     def first(self):
         """执行查询，返回第一条匹配记录，无结果时返回 None。
 
-        用法::
+        示例::
 
             user = UserTable.query(UserTable.select().where(UserTable.name == "Alice")).first
         """
@@ -69,7 +69,7 @@ class Query:
     def count(self) -> int:
         """返回查询结果总数，使用子查询 COUNT，不加载全量数据。
 
-        用法::
+        示例::
 
             total = UserTable.query(UserTable.select().where(UserTable.age > 18)).count
         """
@@ -87,7 +87,7 @@ class Query:
 
         内部使用 COUNT 子查询统计总数，不加载全量数据。
 
-        用法::
+        示例::
 
             # 基本分页
             users, total = UserTable.query(stmt).paginate(offset=0, limit=20)
@@ -121,7 +121,7 @@ class Query:
         """
         分页查询，直接返回 PResult 对象（PR.success 包装）。
 
-        用法::
+        示例::
 
             # 基本分页
             result = UserTable.query(stmt).paginate_pr(offset=0, limit=20)
@@ -150,7 +150,7 @@ class SoftDelete:
     def select_active(cls) -> SelectOfScalar:
         """返回只包含未删除记录的查询语句（is_delete == 0）。
 
-        用法::
+        示例::
 
             users = UserTable.select_active().where(UserTable.age > 18)
             result = UserTable.query(users).all
@@ -166,7 +166,7 @@ class SoftDelete:
         - skip_check: callable(obj) -> bool，返回 True 则跳过该记录
         - 返回 (rows, deleted_list)
 
-        用法::
+        示例::
 
             rows, deleted = UserTable.soft_delete_by_ids(
                 ids, skip_check=lambda u: u.role == Role.ADMIN
@@ -192,7 +192,7 @@ class SoftDelete:
     def soft_delete(self, session=None):
         """软删除当前实例（设 is_delete=1），支持传入已有 session 以复用事务。
 
-        用法::
+        示例::
 
             user.soft_delete()
             # 或在事务中
@@ -217,7 +217,7 @@ class SQLModelPlus(SQLModel):
     def set_engine(cls, engine: Engine) -> None:
         """绑定数据库引擎，支持多租户通过 __scope__ 隔离。
 
-        用法::
+        示例::
 
             engine = sqlmodel.create_engine(config.get_database(), echo=False)
             SQLModelPlus.set_engine(engine)
@@ -235,7 +235,7 @@ class SQLModelPlus(SQLModel):
 
         需在所有 Table 类导入后调用，以确保 SQLModel 元数据已完整注册。
 
-        用法::
+        示例::
 
             # 导入所有 Table 类触发 SQLModel 元数据注册
             from app.models import UserTable, OrderTable  # noqa: F401
@@ -256,7 +256,7 @@ class SQLModelPlus(SQLModel):
         """
         事务上下文管理器，yield 一个 session，自动提交或回滚。
 
-        用法::
+        示例::
 
             with UserTable.Transaction() as session:
                 user.upsert(session=session)
@@ -275,7 +275,7 @@ class SQLModelPlus(SQLModel):
     def select(cls) -> SelectOfScalar:
         """返回针对当前模型的基础查询语句，可继续链式调用 .where() 等条件。
 
-        用法::
+        示例::
 
             stmt = UserTable.select().where(UserTable.age > 18)
             users = UserTable.query(stmt).all
@@ -286,7 +286,7 @@ class SQLModelPlus(SQLModel):
     def query(cls, statement: Union[SelectOfScalar, str], params: Union[Dict[str, Any], Tuple[Any]] = {}):
         """包装查询语句，返回 Query 对象，支持 .all / .first / .count / .paginate。
 
-        用法::
+        示例::
 
             # 使用 SelectOfScalar
             result = UserTable.query(UserTable.select().where(UserTable.name == "Alice")).first
@@ -299,7 +299,7 @@ class SQLModelPlus(SQLModel):
     def find_by_id(cls, ident: Union[Dict[str, Any], Tuple[Any], Any], session: Optional[sqlmodel.Session] = None):
         """根据主键查询记录，查不到时返回 None，支持传入已有 session 以复用事务。
 
-        用法::
+        示例::
 
             user = UserTable.find_by_id(1)
             # 在事务中复用 session
@@ -315,7 +315,7 @@ class SQLModelPlus(SQLModel):
     def find_by_id_or_raise(cls, ident: Union[Dict[str, Any], Tuple[Any], Any], session: Optional[sqlmodel.Session] = None, message: Optional[str] = None):
         """根据主键查询记录，查不到时抛出 RuntimeException。
 
-        用法::
+        示例::
 
             user = UserTable.find_by_id_or_raise(1)
             user = UserTable.find_by_id_or_raise(1, message="用户不存在")
@@ -329,7 +329,7 @@ class SQLModelPlus(SQLModel):
     def update_by_id(cls, ident: Union[Dict[str, Any], Tuple[Any], Any], **kwargs) -> bool:
         """根据主键更新指定字段，返回是否成功（True=更新成功，False=主键列不存在）。
 
-        用法::
+        示例::
 
             UserTable.update_by_id(1, name="新名字", age=18)
             # 复合主键
@@ -351,7 +351,7 @@ class SQLModelPlus(SQLModel):
     def delete_by_id(cls, ident: Union[Dict[str, Any], Tuple[Any], Any]) -> bool:
         """根据主键删除单条记录，返回是否成功删除（True=找到并删除，False=未找到）。
 
-        用法::
+        示例::
 
             deleted = UserTable.delete_by_id(1)
         """
@@ -366,7 +366,7 @@ class SQLModelPlus(SQLModel):
     def delete_by_ids(cls, ids: List) -> int:
         """批量删除记录（原子事务），传入主键 id 列表，返回实际删除行数。
 
-        用法::
+        示例::
 
             rows = UserTable.delete_by_ids([1, 2, 3])
         """
@@ -385,7 +385,7 @@ class SQLModelPlus(SQLModel):
 
         SQLite 不支持 TRUNCATE，自动回退为 DELETE FROM。
 
-        用法::
+        示例::
 
             UserTable.truncate()
 
@@ -406,7 +406,7 @@ class SQLModelPlus(SQLModel):
     def insert(self, session: Optional[sqlmodel.Session] = None):
         """插入新记录，自动 flush + refresh 返回最新实例，支持传入已有 session 以复用事务。
 
-        用法::
+        示例::
 
             user = UserTable(name="Alice", age=18).insert()
             # 在事务中复用 session
@@ -427,7 +427,7 @@ class SQLModelPlus(SQLModel):
     def update(self, session: Optional[sqlmodel.Session] = None):
         """将当前实例的字段变更持久化到数据库，自动 merge + refresh 返回最新实例，支持传入已有 session 以复用事务。
 
-        用法::
+        示例::
 
             user.name = "Bob"
             user = user.update()
@@ -449,7 +449,7 @@ class SQLModelPlus(SQLModel):
     def upsert(self, session: Optional[sqlmodel.Session] = None):
         """根据主键是否有值自动选择 insert 或 update，支持传入已有 session 以复用事务。
 
-        用法::
+        示例::
 
             # 无主键 → insert
             user = UserTable(name="Alice").upsert()
@@ -467,7 +467,7 @@ class SQLModelPlus(SQLModel):
     def delete(self, session: Optional[sqlmodel.Session] = None):
         """从数据库中删除当前实例，支持传入已有 session 以复用事务。
 
-        用法::
+        示例::
 
             user.delete()
             # 在事务中复用 session
