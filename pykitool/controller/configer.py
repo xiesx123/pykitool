@@ -43,7 +43,8 @@ def register_controller_configer(
     tags: list[str] | None = None,
     path: str,
     listener: Callable[[], None] | None = None,
-    auth_callable: Callable[[], str] | None = None,
+    auth_read_callable: Callable[[], str] | None = None,
+    auth_write_callable: Callable[[], str] | None = None,
 ) -> None:
     """
     注册配置读写路由，提供两个接口：
@@ -123,10 +124,11 @@ def register_controller_configer(
     router = APIRouter()
 
     # 可选认证依赖：用户自定义 auth_callable 直接作为 Depends 注入
-    _deps = [Depends(auth_callable)] if auth_callable is not None else []
+    _read_deps = [Depends(auth_read_callable)] if auth_read_callable is not None else []
+    _write_deps = [Depends(auth_write_callable)] if auth_write_callable is not None else []
 
     # 获取配置
-    @router.get("/get", response_model=Result[dict], summary="获取配置", dependencies=_deps)
+    @router.get("/get", response_model=Result[dict], summary="获取配置", dependencies=_read_deps)
     def get_config(key: Optional[str] = Query(None, description="配置路径，如 site.name，不传则返回全部配置")):
         try:
             data = JSONUtil.read_json_object(path)
@@ -138,7 +140,7 @@ def register_controller_configer(
             raise RuntimeException(message=f"Get config failed: {e}") from e
 
     # 更新配置（支持单字段或整段 JSON，传入 dict 时自动与现有值浅合并）
-    @router.post("/set", response_model=Result[dict], summary="更新配置", dependencies=_deps)
+    @router.post("/set", response_model=Result[dict], summary="更新配置", dependencies=_write_deps)
     def set_config(vo: ConfigVO):
         try:
             data = JSONUtil.read_json_object(path)
