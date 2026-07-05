@@ -10,8 +10,8 @@ def register_controller_swagger(
     prefix: str = "",
     auth_callable: Optional[Callable[[], str]] = None,
     openapi_url: str = "/openapi.json",
-    swagger_title: str = "Restful API Documentation - Swagger UI",
-    redoc_title: str = "Restful API Documentation - Redoc",
+    swagger_title: str = "Restful API - Swagger UI",
+    redoc_title: str = "Restful API - Redoc",
 ):
     """
     注册 Swagger / Redoc 文档路由，支持可选的自定义认证。

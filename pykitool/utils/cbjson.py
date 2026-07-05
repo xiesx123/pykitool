@@ -35,13 +35,16 @@ def load_json_file(path: Union[str, Path], default: Any = None) -> Any:
 
 # 将数据转换为 JSON 字符串（紧凑格式）
 def to_json(data: Any) -> str:
-    return JSONUtil.to_json_str(data)
+    return json.dumps(
+        data,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        default=lambda o: o.model_dump() if hasattr(o, "model_dump") else str(o),
+    )
 
 
 # 将数据转换为格式化的 JSON 字符串
 def to_json_pretty(data: Any, indent: int = 2, sort: bool = False) -> str:
-    if not sort:
-        return JSONUtil.to_json_pretty_str(data)
     return json.dumps(
         data,
         ensure_ascii=False,

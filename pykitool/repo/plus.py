@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
+from copy import copy
 
 import sqlmodel
 from pydantic import ConfigDict
@@ -183,8 +184,12 @@ class SoftDelete:
                     continue
                 obj.is_delete = 1
                 session.add(obj)
-                deleted.append(obj)
+                # 预先访问字段，确保加载
+                _ = obj.id
+                _ = obj.firebase_id
+                deleted.append(copy(obj))
                 rows += 1
+        # 删除 expunge 调用，返回已加载的浅拷贝列表
         return rows, deleted
 
     # AR增强：实例方法

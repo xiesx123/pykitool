@@ -185,24 +185,47 @@ def mk(path: Union[str, Path], is_clean: bool = False) -> Path:
 def cp(src: Union[str, Path], dest: Union[str, Path]) -> Optional[str]:
     src = str(src)
     dest = str(dest)
-    file_name = os.path.basename(src)
-
-    if os.path.isdir(dest):
-        target_file = os.path.join(dest, file_name)
-    else:
-        target_file = dest
-
-    target_dir = os.path.dirname(target_file)
 
     try:
-        mk(target_dir)
-        shutil.copy2(src, target_file)
-        logger.debug(f"File {src} copied to: {target_file}")
-        return target_file
+        # 如果源是文件夹
+        if os.path.isdir(src):
+            # 确保目标路径存在
+            mk(dest)
+
+            # 遍历源文件夹中的所有内容
+            for item in os.listdir(src):
+                src_item = os.path.join(src, item)
+                dest_item = os.path.join(dest, item)
+
+                if os.path.isdir(src_item):
+                    # 递归拷贝子文件夹
+                    shutil.copytree(src_item, dest_item, dirs_exist_ok=True)
+                else:
+                    # 拷贝文件
+                    shutil.copy2(src_item, dest_item)
+
+            logger.debug(f"Folder contents from {src} copied to: {dest}")
+            return dest
+
+        # 如果源是文件
+        else:
+            file_name = os.path.basename(src)
+
+            if os.path.isdir(dest):
+                target_file = os.path.join(dest, file_name)
+            else:
+                target_file = dest
+
+            target_dir = os.path.dirname(target_file)
+            mk(target_dir)
+            shutil.copy2(src, target_file)
+            logger.debug(f"File {src} copied to: {target_file}")
+            return target_file
+
     except FileNotFoundError:
         logger.error(f"Source file not found: {src}")
     except PermissionError:
-        logger.error(f"Permission denied copying to: {target_file}")
+        logger.error(f"Permission denied copying to: {dest}")
     except shutil.SameFileError:
         logger.error(f"Source and target are the same file: {src}")
     except OSError as e:
