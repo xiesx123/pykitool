@@ -60,12 +60,12 @@ def tempdir(root_dir: str = "tools") -> str:
 
 # 获取临时音频文件路径
 def temp_audio_wav(prefix: str = None, suffix: str = ".wav") -> str:
-    return PathUtil.create_temp_file(prefix=prefix, suffix=suffix, dir_path=tempdir())
+    return PathUtil.create_temp_file(prefix=prefix, suffix=suffix, dir_path=tempdir()).as_posix()
 
 
 # 获取临时视频文件路径
 def temp_video_mp4(prefix: str = None, suffix: str = ".mp4") -> str:
-    return PathUtil.create_temp_file(prefix=prefix, suffix=suffix, dir_path=tempdir())
+    return PathUtil.create_temp_file(prefix=prefix, suffix=suffix, dir_path=tempdir()).as_posix()
 
 
 # 创建临时处理目录并拷贝源文件
@@ -134,8 +134,8 @@ def relative_path(path: Union[str, Path], base_dir: str = "webapp") -> Path:
 
 
 # 写入文件内容
-def write(path: Union[str, Path], data: str) -> Path:
-    return FileUtil.write_utf8_string(path=path, content=data)
+def write(path: Union[str, Path], data: str) -> str:
+    return FileUtil.write_utf8_string(path=path, content=data).as_posix()
 
 
 # 读取文件内容
@@ -171,14 +171,16 @@ def reads(paths: Union[str, bytes, List[str], Tuple[str, ...]]) -> Optional[str]
 
 # 验证路径是否有效且存在
 def exist(path: Union[str, Path]) -> bool:
+    if not path:
+        return False
     return FileUtil.exist(str(path))
 
 
 # 新建文件夹（可选清空已有内容）
-def mk(path: Union[str, Path], is_clean: bool = False) -> Path:
+def mk(path: Union[str, Path], is_clean: bool = False) -> str:
     if is_clean:
         clean(path)
-    return FileUtil.mkdirs(path)
+    return FileUtil.mkdirs(path).as_posix()
 
 
 # 拷贝文件到目标位置
@@ -236,17 +238,17 @@ def cp(src: Union[str, Path], dest: Union[str, Path]) -> Optional[str]:
 
 
 # 移动文件到目标位置
-def mv(src: Union[str, Path], dest: Union[str, Path], is_override: bool = True) -> Path:
-    return FileUtil.move(src=src, dest=dest, is_override=is_override)
+def mv(src: Union[str, Path], dest: Union[str, Path], is_override: bool = True) -> str:
+    return FileUtil.move(src=src, dest=dest, is_override=is_override).as_posix()
 
 
 # 安全删除文件
-def rm(path: Union[str, Path]) -> None:
+def rm(path: Union[str, Path]) -> bool:
     # 防止删除系统根目录
     unsafe_paths = ["/", "C:\\", "C:/", os.path.expanduser("~")]
     if path in unsafe_paths:
         logger.error("Unsafe delete attempt blocked: {}", path)
-        return
+        return False
     # 删除
     return FileUtil.del_file(path)
 
@@ -262,7 +264,7 @@ def clean(path: Union[str, Path]) -> bool:
 
 
 # 覆盖文件（可选备份原文件）
-def overwrite(src: Union[str, Path], dest: Union[str, Path], backup: bool = True) -> None:
+def overwrite(src: Union[str, Path], dest: Union[str, Path], backup: bool = True) -> str:
     src = str(src)
     dest = str(dest)
     try:
@@ -275,9 +277,10 @@ def overwrite(src: Union[str, Path], dest: Union[str, Path], backup: bool = True
             timestamp = time.strftime("%Y%m%d%H%M%S")
             ext_str = f".{ext}" if ext else ""
             backup_path = os.path.join(target_dir, f"{name_part}_{timestamp}{ext_str}")
-            FileUtil.move(dest, backup_path)
-        FileUtil.move(src, dest)
+            logger.debug(f"File overwritten: {dest} (backup)")
+            return FileUtil.move(dest, backup_path).as_posix()
         logger.debug(f"File overwritten: {dest}")
+        return FileUtil.move(src, dest).as_posix()
     except FileNotFoundError as e:
         raise FileNotFoundError(f"Overwrite failed: {str(e)}") from e
     except PermissionError as e:
