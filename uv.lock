@@ -1215,7 +1215,7 @@ wheels = [
 
 [[package]]
 name = "hutool-python"
-version = "1.1.1"
+version = "1.1.2"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
 dependencies = [
     { name = "bcrypt" },
@@ -1240,9 +1240,9 @@ dependencies = [
     { name = "watchdog", version = "4.0.2", source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }, marker = "python_full_version < '3.9'" },
     { name = "watchdog", version = "6.0.0", source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }, marker = "python_full_version >= '3.9'" },
 ]
-sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/4b/45/7af6b5653070b830d7c860159284c6d5896548908f747058fcea7a67ee3a/hutool_python-1.1.1.tar.gz", hash = "sha256:7bc9590fa33940939ba6147e2955125fcfbe3a92ace200591a63fdbb087ba1bc", size = 268561, upload-time = "2026-06-22T10:55:19.952Z" }
+sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/2c/04/39b651e7147a29fba45c83bba922f6a8726589f24fa5eca65775d50ec075/hutool_python-1.1.2.tar.gz", hash = "sha256:58bf4e25d61edb8083d96f558c20c7e58cc0d4af9be48ea24802e35f30546f5d", size = 277527, upload-time = "2026-06-28T05:01:22.201Z" }
 wheels = [
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/b3/17/12aaf1910e4139a1646ada01390140cfe9a24bdbbdb0194576954d3e9b36/hutool_python-1.1.1-py3-none-any.whl", hash = "sha256:ded990d07dc3cfb88a4ba58629f4f56ea5a9810b36ad61bbee315d94c630077d", size = 301237, upload-time = "2026-06-22T10:55:18.494Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/74/bd/899ed8619009bc958adae79ed63feffcf5aa48e664622e14301ec0a73739/hutool_python-1.1.2-py3-none-any.whl", hash = "sha256:b8eb8eb32f49594ec47703230df4c82023c57c334200222f0f8e32954ca77475", size = 310026, upload-time = "2026-06-28T05:01:20.388Z" },
 ]
 
 [[package]]
@@ -2987,7 +2987,7 @@ wheels = [
 
 [[package]]
 name = "pykitool"
-version = "0.0.5"
+version = "0.0.7"
 source = { editable = "." }
 dependencies = [
     { name = "asyncio" },
@@ -3037,19 +3037,19 @@ dev = [
 requires-dist = [
     { name = "asyncio", specifier = "==4.0.0" },
     { name = "fastapi", specifier = ">=0.115.0" },
-    { name = "hutool-python", specifier = ">=1.1.1" },
+    { name = "hutool-python", specifier = ">=1.1.2" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "psutil", specifier = ">=7.2.2" },
     { name = "pydantic", specifier = ">=2.10.6" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
     { name = "python-multipart", specifier = ">=0.0.20" },
     { name = "requests", specifier = ">=2.25.0" },
-    { name = "requests-cache", specifier = ">=1.3.2" },
+    { name = "requests-cache", specifier = ">=1.3.3" },
     { name = "sqlalchemy", specifier = ">=2.0.51" },
     { name = "sqlmodel", specifier = ">=0.0.29" },
     { name = "sseclient-py", specifier = ">=1.7.0" },
     { name = "torch", marker = "extra == 'torch'", specifier = ">=2.0.0" },
-    { name = "tqdm", specifier = ">=4.68.3" },
+    { name = "tqdm", specifier = ">=4.68.4" },
     { name = "typing-extensions", specifier = ">=4.13.2" },
 ]
 provides-extras = ["dev", "torch"]
@@ -3371,7 +3371,7 @@ wheels = [
 
 [[package]]
 name = "requests-cache"
-version = "1.3.2"
+version = "1.3.3"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
 dependencies = [
     { name = "attrs", version = "25.3.0", source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }, marker = "python_full_version < '3.9'" },
@@ -3391,9 +3391,9 @@ dependencies = [
     { name = "urllib3", version = "2.6.3", source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }, marker = "python_full_version == '3.9.*'" },
     { name = "urllib3", version = "2.7.0", source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }, marker = "python_full_version >= '3.10'" },
 ]
-sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/c3/ae/90a0f931c7f6b5a674b98c25ecb2593a173bcee14f0d8c148471df3d7b26/requests_cache-1.3.2.tar.gz", hash = "sha256:bdc3680931f98a1dea509d339ea6b45cea526945b47b250ce63ffd2744ee0b14", size = 100167, upload-time = "2026-05-11T04:09:53.233Z" }
+sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/32/ab/a340c7f529646f16e5656a8ba1424ed0de406203e4554868491786628730/requests_cache-1.3.3.tar.gz", hash = "sha256:79b72d5ac5143992d1836ad78f4d8e65666061dd44e220548caab3723089826b", size = 101179, upload-time = "2026-07-03T19:48:57.963Z" }
 wheels = [
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/b0/ff/d87d1a7700463afc5440bec80cfbcb56ef929f05fbfdc946ce031b13d040/requests_cache-1.3.2-py3-none-any.whl", hash = "sha256:c52666c76b08daa94d05a99327dd24afc46f405abc044e8c2267b540f90673d0", size = 70633, upload-time = "2026-05-11T04:09:51.554Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/a5/bf/c1775e49b350225bd851576ba75263bc728d8f05c0e31439a45f3429cc7b/requests_cache-1.3.3-py3-none-any.whl", hash = "sha256:c8df20ff874ebfc026959e3874e6c12bd6724934cdb10925915908453d4b17e4", size = 70788, upload-time = "2026-07-03T19:48:56.693Z" },
 ]
 
 [[package]]
@@ -3938,14 +3938,14 @@ wheels = [
 
 [[package]]
 name = "tqdm"
-version = "4.68.3"
+version = "4.68.4"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
 dependencies = [
     { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/87/d7/0535a28b1f5f24f6612fb3ff1e89fb1a8d160fee0f976e0aa6803862134b/tqdm-4.68.3.tar.gz", hash = "sha256:00dfa48452b6b6cfae3dd9885636c23d3422d1ec97c66d96818cbd5e0821d482", size = 170596, upload-time = "2026-06-17T07:36:52.105Z" }
+sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/ae/5f/57ff8b434839e70dab45601284ea413e947a63799891b7553e5960a793a8/tqdm-4.68.4.tar.gz", hash = "sha256:19829c9673638f2a0b8617da4cdcb927e831cd88bcfcb6e78d42a4d1af131520", size = 792418, upload-time = "2026-07-07T09:58:18.369Z" }
 wheels = [
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/d8/8e/bb97bb0c71802080bfc8952937d174e49cfc50de5c951dd47b2496f0dcdb/tqdm-4.68.3-py3-none-any.whl", hash = "sha256:39832cc2def2789a6f29df83f172db7416cea70052c0907a57801c5f2fdccb03", size = 78337, upload-time = "2026-06-17T07:36:50.132Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/22/2a/5e5e750890ada51017d18d0d4c30da696e5b5bd3180947729927628fc3cb/tqdm-4.68.4-py3-none-any.whl", hash = "sha256:5168118b2368f48c561afda8020fd79195b1bdb0bdf8086b88442c267a315dc2", size = 676612, upload-time = "2026-07-07T09:58:16.256Z" },
 ]
 
 [[package]]
