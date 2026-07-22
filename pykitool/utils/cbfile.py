@@ -83,7 +83,7 @@ def temp_process_path(path: str, rebuild: bool = False, output: Optional[str] = 
 
 # 拷贝文件到系统临时目录
 def move_to_temp(path: Union[str, Path]) -> str:
-    return cp(path, os.path.join(FileUtil.get_tmp_dir_path(), fullname(path)))
+    return cp(path, os.path.join(tempdir(), fullname(path)))
 
 
 # ================================ 目录遍历 ================================
@@ -296,6 +296,21 @@ def md5(file_obj: BinaryIO) -> str:
     for chunk in iter(lambda: file_obj.read(65536), b""):
         md5_hash.update(chunk)
     return md5_hash.hexdigest()
+
+
+# 格式化文件大小（字节 -> 可读字符串）
+def format_size(size_bytes) -> str:
+    try:
+        size = int(size_bytes)
+        if size >= 1024 * 1024 * 1024:
+            return f"{size / (1024 ** 3):.2f}GB"
+        elif size >= 1024 * 1024:
+            return f"{size / (1024 ** 2):.2f}MB"
+        elif size >= 1024:
+            return f"{size / 1024:.2f}KB"
+        return f"{size}B"
+    except Exception:
+        return ""
 
 
 # ================================ 调用示例 ================================
